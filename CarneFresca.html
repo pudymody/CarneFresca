@@ -352,31 +352,11 @@
 </head>
 <body>
 	<div id="app">
-		<div v-if="EDITING">
-			<input type="text" v-model="name" placeholder="Nombre" class="player__name">
-
-			<div class="habilities" v-for="(item,index) in CATEGORIES[step].items">
-				<h2 class="habilities__title">{{item.name}}</h2>
-				<slider :value="item.value" v-on:increment="decrementPoints(index)" v-on:decrement="incrementPoints(index)"></slider>
-			</div>
-			<h2 class="center">Quedan <span :class="{ 'is-invalid' : invalidPoints, 'is-valid' : validPoints }">{{CATEGORIES[step].pointsToAdd}}</span> puntos</h2>
-			<button @click="nextStep" :disabled="!canMove">Siguiente</button>
-		</div>
-		<div v-if="!EDITING">
-			<h2>{{name}}</h2>
-			<ul>
-				<li v-for="(value,item) in stats">
-					<h2 class="habilities__title">{{item}}<slider :editing="false" :value="value" style="display: inline-flex"></slider></h2>
-					<ul>
-						<li v-for="h in CATEGORIES[item].items">{{h.name}}<slider :editing="false" :value="h.value" style="display: inline-flex"></slider></li>
-					</ul>
-				</li>
-			</ul>
-		</div>
+		<Player-Maker v-on:created="PlayerCreation"></Player-Maker>
 	</div>
 	<script src="vue.js"></script>
 	<script>
-		Vue.component('slider', {
+		Vue.component('Slider', {
 			props : {
 				value : {
 					type: Number,
@@ -425,8 +405,7 @@
 			template : '<div class="slider"><button @click="decrement" class="slider__button" v-if="editing">-</button><div class="slider__value"><svg viewBox="0 0 226 226" preserveAspectRatio="xMidYMid meet" class="slider__star" v-for="n in value" :fill="COLORS[value-1]"><path d="M 43.680672,226 113,0 182.31933,226 0,86 h 226 z"/></svg></div><button @click="increment" class="slider__button" v-if="editing">+</button></div>',
 		});
 
-		var app = new Vue({
-			el: '#app',
+		Vue.component('PlayerMaker', {
 			methods : {
 				decrementPoints : function(index){
 					this.CATEGORIES[this.step].items[index].value++;
@@ -446,10 +425,19 @@
 						}, this);
 						this.CURRENT_STEP++;
 					}else{
-						this.EDITING = false;
+						var FinalData = {};
+						var stats = this.stats;
+						for( var key in stats ){
+							if( !FinalData.hasOwnProperty(key) ){
+								FinalData[key] = { value : stats[key], habilities : this.CATEGORIES[key].items };
+							}
+						}
+
+						this.$emit('created', FinalData);
 					}
 				}
 			},
+
 			computed : {
 				step : function(){
 					return this.STEPS[this.CURRENT_STEP];
@@ -477,10 +465,10 @@
 					}, {});
 				}
 			},
+
 			data : function(){
 				return {
 					name : '',
-					EDITING : true,
 					CATEGORIES : {
 						GENERAL : {
 							pointsToAdd: 1,
@@ -528,6 +516,16 @@
 					},
 					STEPS : ["GENERAL", "FISICO", "AGILIDAD", "INTELIGENCIA", "ESPIRITU"],
 					CURRENT_STEP : 0
+				}
+			},
+			template: '<div><input type="text" v-model="name" placeholder="Nombre" class="player__name"><div class="habilities" v-for="(item,index) in CATEGORIES[step].items"><h2 class="habilities__title">{{item.name}}</h2><slider :value="item.value" v-on:increment="decrementPoints(index)" v-on:decrement="incrementPoints(index)"></slider></div><h2 class="center">Quedan <span :class="{ \'is-invalid\' : invalidPoints, \'is-valid\' : validPoints }">{{CATEGORIES[step].pointsToAdd}}</span> puntos</h2><button @click="nextStep" :disabled="!canMove">Siguiente</button></div>',
+		})
+
+		var app = new Vue({
+			el: '#app',
+			methods : {
+				PlayerCreation : function(data){
+					console.log(arguments, data);
 				}
 			}
 		})
