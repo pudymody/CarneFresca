@@ -304,7 +304,6 @@
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			border: 1px solid #ddd;
 		}
 
 		.slider__button {
@@ -365,10 +364,14 @@
 		</div>
 		<div v-if="!EDITING">
 			<h2>{{name}}</h2>
-			<div class="habilities" v-for="(value,item) in stats">
-				<h2 class="habilities__title">{{item}}<svg viewBox="0 0 226 226" preserveAspectRatio="xMidYMid meet" class="slider__star" v-for="n in value"><path d="M 43.680672,226 113,0 182.31933,226 0,86 h 226 z"/></svg></h2>
-				<div v-for="h in CATEGORIES[item].items">{{h.name}}<svg viewBox="0 0 226 226" preserveAspectRatio="xMidYMid meet" class="slider__star" v-for="n in h.value"><path d="M 43.680672,226 113,0 182.31933,226 0,86 h 226 z"/></svg></div>
-			</div>
+			<ul>
+				<li v-for="(value,item) in stats">
+					<h2 class="habilities__title">{{item}}<slider :editing="false" :value="value" style="display: inline-flex"></slider></h2>
+					<ul>
+						<li v-for="h in CATEGORIES[item].items">{{h.name}}<slider :editing="false" :value="h.value" style="display: inline-flex"></slider></li>
+					</ul>
+				</li>
+			</ul>
 		</div>
 	</div>
 	<script src="vue.js"></script>
@@ -378,6 +381,11 @@
 				value : {
 					type: Number,
 					default : 3
+				},
+
+				editing : {
+					type: Boolean,
+					default: true
 				},
 
 				min : {
@@ -414,7 +422,7 @@
 					}
 				}
 			},
-			template : '<div class="slider"><button @click="decrement" class="slider__button">-</button><div class="slider__value"><svg viewBox="0 0 226 226" preserveAspectRatio="xMidYMid meet" class="slider__star" v-for="n in value" :fill="COLORS[value-1]"><path d="M 43.680672,226 113,0 182.31933,226 0,86 h 226 z"/></svg></div><button @click="increment" class="slider__button">+</button></div>',
+			template : '<div class="slider"><button @click="decrement" class="slider__button" v-if="editing">-</button><div class="slider__value"><svg viewBox="0 0 226 226" preserveAspectRatio="xMidYMid meet" class="slider__star" v-for="n in value" :fill="COLORS[value-1]"><path d="M 43.680672,226 113,0 182.31933,226 0,86 h 226 z"/></svg></div><button @click="increment" class="slider__button" v-if="editing">+</button></div>',
 		});
 
 		var app = new Vue({
