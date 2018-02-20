@@ -330,11 +330,16 @@
 			padding: 10px;
 		}
 
-		.player__name {
+		input[type="text"] {
 			border: none;
 			border-bottom: 3px solid #ddd;
 			width: 100%;
 			font-size: 1.5em;
+			margin-bottom: 20px;
+		}
+
+		h2 {
+			margin-bottom: 0;
 		}
 
 		.habilities {
@@ -348,11 +353,63 @@
 		.is-invalid { color: #FF4136; }
 		.is-valid { color: #2ECC40; }
 		.center { text-align: center; }
+
+
+		.toolbar {
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+			border-bottom: 1px solid #ddd;
+		}
+
+		.toolbar__item:last-child label {
+			border-right: 1px solid #ddd;
+		}
+
+		.toolbar__item label {
+			display: block;
+			border-left: 1px solid #ddd;
+			padding: 10px;
+		}
+
+		.toolbar__item svg {
+			width: 24px;
+			height: 24px;
+		}
+
+		.toolbar__item input {
+			display: none;
+		}
+
+		.toolbar__item input:checked + label {
+			border-top: 3px solid #ddd;
+		}
 	</style>
 </head>
 <body>
 	<div id="app">
-		<Player-Maker v-on:created="PlayerCreation"></Player-Maker>
+		<Player-Maker v-on:created="PlayerCreation" v-if="!CREATED"></Player-Maker>
+		<div class="toolbar" v-if="CREATED">
+			<div class="toolbar__item"><input type="radio" id="stats" v-model="tab" value="stats"><label for="stats">{{NAME}}</label></div>
+			<div class="toolbar__item"><input type="radio" id="inventory" v-model="tab" value="inventory"><label for="inventory">Inventario</label></div>
+		</div>
+		<div v-if="tab == 'stats'">
+			<ul>
+				<li v-for="(value, key) in STATS">
+					<h2>{{key}} <slider style="display:inline-flex" :editing="false" :value="value.value"></slider></h2>
+					<ul>
+						<li v-for="h in value.habilities">{{h.name}} <slider style="display:inline-flex" :editing="false" :value="h.value"></slider></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+		<div v-if="tab == 'inventory'">
+			<input type="text" placeholder="Item 1" v-model="INVENTORY[0]">
+			<input type="text" placeholder="Item 2" v-model="INVENTORY[1]">
+			<input type="text" placeholder="Item 3" v-model="INVENTORY[2]">
+			<input type="text" placeholder="Item 4" v-model="INVENTORY[3]">
+			<input type="text" placeholder="Item 5" v-model="INVENTORY[4]">
+		</div>
 	</div>
 	<script src="vue.js"></script>
 	<script>
@@ -425,11 +482,11 @@
 						}, this);
 						this.CURRENT_STEP++;
 					}else{
-						var FinalData = {};
+						var FinalData = { name : this.name, stats : {} };
 						var stats = this.stats;
 						for( var key in stats ){
-							if( !FinalData.hasOwnProperty(key) ){
-								FinalData[key] = { value : stats[key], habilities : this.CATEGORIES[key].items };
+							if( !FinalData.stats.hasOwnProperty(key) ){
+								FinalData.stats[key] = { value : stats[key], habilities : this.CATEGORIES[key].items };
 							}
 						}
 
@@ -523,9 +580,17 @@
 
 		var app = new Vue({
 			el: '#app',
+			data : {
+				tab: "stats",
+				INVENTORY : ["","","","",""],
+				STATS : [],
+				CREATED : false
+			},
 			methods : {
 				PlayerCreation : function(data){
-					console.log(arguments, data);
+					this.STATS = data.stats;
+					this.NAME = data.name;
+					this.CREATED = true;
 				}
 			}
 		})
