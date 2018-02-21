@@ -392,6 +392,7 @@
 		<div class="toolbar" v-if="CREATED">
 			<div class="toolbar__item"><input type="radio" id="stats" v-model="tab" value="stats"><label for="stats">{{NAME}}</label></div>
 			<div class="toolbar__item"><input type="radio" id="inventory" v-model="tab" value="inventory"><label for="inventory">Inventario</label></div>
+			 <div class="toolbar__item"><input type="radio" id="status" v-model="tab" value="status"><label for="status">Estado</label></div>
 		</div>
 		<div v-if="tab == 'stats'">
 			<ul>
@@ -409,6 +410,30 @@
 			<input type="text" placeholder="Item 3" v-model="INVENTORY[2]">
 			<input type="text" placeholder="Item 4" v-model="INVENTORY[3]">
 			<input type="text" placeholder="Item 5" v-model="INVENTORY[4]">
+		</div>
+		<div v-if="tab == 'status'">
+			<div>
+        <button @click="lowDamage">
+          -
+        </button>
+        <h2>
+          Daño: {{damage}}
+        </h2>
+        <button @click="moreDamage">
+          +
+        </button>
+      </div>
+      <div>
+        <button @click="lowTension">
+          -
+        </button>
+        <h2>
+          Tension: {{tension}}
+        </h2>
+        <button @click="moreTension">
+          +
+        </button>
+      </div>
 		</div>
 	</div>
 	<script src="vue.js"></script>
@@ -587,6 +612,21 @@
 				CREATED : false
 			},
 			methods : {
+				lowDamage : function(v){
+          this.damage--;
+        },
+        
+        moreDamage : function(v){
+          this.damage++;
+        },
+        
+        lowTension : function(){
+          this.tension--;
+        },
+        
+        moreTension : function(){
+          this.tension++;
+        },
 				PlayerCreation : function(data){
 					this.STATS = data.stats;
 					this.NAME = data.name;
