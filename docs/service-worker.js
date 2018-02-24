@@ -12,7 +12,7 @@
  */
 
 importScripts(
-  "/precache-manifest.19483b2a524c4893881fff296ab7af14.js",
+  "/CarneFresca/precache-manifest.187b9b34e1f65c7b43ca92ff0c62c8dc.js",
   "https://storage.googleapis.com/workbox-cdn/releases/3.0.0-beta.0/workbox-sw.js"
 );
 
