@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import Create  from './views/Create.vue'
 import Home from './views/Home.vue'
-import About from './views/About.vue'
+import Player from './views/Player.vue'
 
 Vue.use(Router)
 
@@ -13,9 +14,15 @@ export default new Router({
       component: Home
     },
     {
-      path: '/about',
-      name: 'about',
-      component: About
+      path: '/player',
+      name: 'player',
+      component: Player
+    },
+    {
+      path: '/create/:CURRENT_STEP',
+      name : 'create',
+      component: Create,
+      props:function(route){ return { CURRENT_STEP : parseInt(route.params.CURRENT_STEP, 10) }; }
     }
   ]
 })
